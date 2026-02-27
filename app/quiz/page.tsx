@@ -7,10 +7,12 @@ import Link from 'next/link';
 import { ArrowLeft, Star, Heart } from 'lucide-react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSound } from '@/hooks/useSound';
 
 export default function QuizPage() {
   const { progress, updateProgress } = useProgress();
   const router = useRouter();
+  const { playSound } = useSound();
   
   const [currentLevelIndex, setCurrentLevelIndex] = useState(0);
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -27,7 +29,10 @@ export default function QuizPage() {
     setSelectedAnswer(index);
     
     if (index === question.answer) {
+      playSound('correct');
       setScore(s => s + 1);
+    } else {
+      playSound('incorrect');
     }
 
     setTimeout(() => {
@@ -35,6 +40,7 @@ export default function QuizPage() {
         setCurrentQuestion(prev => prev + 1);
         setSelectedAnswer(null);
       } else {
+        playSound('win');
         setCompleted(true);
         // Add stars based on score
         const earnedStars = Math.ceil((score + (index === question.answer ? 1 : 0)) / currentLevel.questions.length * 3);
@@ -84,7 +90,10 @@ export default function QuizPage() {
           <div className="flex flex-col gap-3">
             {hasNextLevel && (
               <button 
-                onClick={handleNextLevel}
+                onClick={() => {
+                  playSound('click');
+                  handleNextLevel();
+                }}
                 className="w-full bg-yellow-500 text-white font-bold text-lg py-4 rounded-xl hover:bg-yellow-600 transition-colors shadow-md"
               >
                 Next Level
@@ -93,6 +102,7 @@ export default function QuizPage() {
             <div className="flex gap-3">
               <button 
                 onClick={() => {
+                  playSound('click');
                   setCurrentQuestion(0);
                   setScore(0);
                   setCompleted(false);
@@ -103,7 +113,10 @@ export default function QuizPage() {
                 Play Again
               </button>
               <button 
-                onClick={() => router.push('/')}
+                onClick={() => {
+                  playSound('click');
+                  router.push('/');
+                }}
                 className="flex-1 bg-neutral-100 text-neutral-700 font-bold text-lg py-4 rounded-xl hover:bg-neutral-200 transition-colors"
               >
                 Back to Map
@@ -119,7 +132,7 @@ export default function QuizPage() {
     <main className="min-h-screen flex flex-col bg-yellow-400">
       {/* Header */}
       <header className="p-4 flex items-center justify-between text-yellow-950">
-        <Link href="/" className="bg-white/30 p-2 rounded-full hover:bg-white/40 transition">
+        <Link href="/" onClick={() => playSound('click')} className="bg-white/30 p-2 rounded-full hover:bg-white/40 transition">
           <ArrowLeft className="w-6 h-6" />
         </Link>
         <div className="font-bold bg-white/30 px-4 py-1 rounded-full">

@@ -5,16 +5,18 @@ import { adventureLevels } from '@/lib/data';
 import { motion } from 'motion/react';
 import Link from 'next/link';
 import { ArrowLeft, Compass, Star, Play } from 'lucide-react';
+import { useSound } from '@/hooks/useSound';
 
 export default function AdventureSelectPage() {
   const { progress } = useProgress();
+  const { playSound } = useSound();
 
   return (
     <main className="min-h-screen bg-orange-50 pb-12">
       {/* Header */}
       <header className="bg-orange-400 text-white p-6 rounded-b-[3rem] shadow-md mb-8">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <Link href="/" className="bg-white/20 p-2 rounded-full hover:bg-white/30 transition">
+          <Link href="/" onClick={() => playSound('click')} className="bg-white/20 p-2 rounded-full hover:bg-white/30 transition">
             <ArrowLeft className="w-6 h-6" />
           </Link>
           <div className="flex items-center gap-2 font-bold text-xl">
@@ -48,6 +50,7 @@ export default function AdventureSelectPage() {
             >
               <Link 
                 href={`/adventure/${level.id}`}
+                onClick={() => playSound('click')}
                 className={`block ${level.color} p-6 rounded-3xl shadow-lg hover:scale-105 transition-transform border-4 border-white`}
               >
                 <div className="bg-white/30 w-16 h-16 rounded-2xl flex items-center justify-center text-4xl mb-4 shadow-sm">

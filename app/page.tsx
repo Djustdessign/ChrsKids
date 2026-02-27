@@ -6,6 +6,7 @@ import { motion } from 'motion/react';
 import Link from 'next/link';
 import { BookOpen, Star, Gamepad2, Brain, Trophy, Compass, Sparkles } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useSound } from '@/hooks/useSound';
 
 const getLevelInfo = (stars: number) => {
   const levels = [
@@ -37,6 +38,7 @@ const getLevelInfo = (stars: number) => {
 export default function Home() {
   const { progress } = useProgress();
   const [dailyVerse, setDailyVerse] = useState('');
+  const { playSound } = useSound();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -70,7 +72,7 @@ export default function Home() {
               </div>
             </div>
           </div>
-          <Link href="/profile" className="bg-white/20 p-3 rounded-full hover:bg-white/30 transition shadow-sm">
+          <Link href="/profile" onClick={() => playSound('click')} className="bg-white/20 p-3 rounded-full hover:bg-white/30 transition shadow-sm">
             <Trophy className="w-6 h-6" />
           </Link>
         </div>
@@ -126,6 +128,7 @@ export default function Home() {
                 <Link 
                   key={story.id} 
                   href={isUnlocked ? `/story/${story.id}` : '#'}
+                  onClick={() => isUnlocked && playSound('click')}
                   className={`block relative p-6 rounded-3xl border-2 transition-all duration-300 ${
                     isUnlocked 
                       ? `${story.color} border-transparent text-white shadow-md hover:scale-[1.03] hover:shadow-xl` 
@@ -161,6 +164,7 @@ export default function Home() {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <Link 
               href="/quiz"
+              onClick={() => playSound('click')}
               className="bg-yellow-400 text-yellow-950 p-6 rounded-3xl shadow-md border-b-4 border-yellow-500 hover:-translate-y-1 hover:shadow-xl transition-all flex flex-col items-center text-center gap-3"
             >
               <div className="bg-white/30 p-5 rounded-full mb-2">
@@ -174,6 +178,7 @@ export default function Home() {
 
             <Link 
               href="/memory"
+              onClick={() => playSound('click')}
               className="bg-green-400 text-green-950 p-6 rounded-3xl shadow-md border-b-4 border-green-500 hover:-translate-y-1 hover:shadow-xl transition-all flex flex-col items-center text-center gap-3"
             >
               <div className="bg-white/30 p-5 rounded-full mb-2">
@@ -187,6 +192,7 @@ export default function Home() {
 
             <Link 
               href="/adventure"
+              onClick={() => playSound('click')}
               className="bg-orange-400 text-orange-950 p-6 rounded-3xl shadow-md border-b-4 border-orange-500 hover:-translate-y-1 hover:shadow-xl transition-all flex flex-col items-center text-center gap-3 sm:col-span-2 lg:col-span-1"
             >
               <div className="bg-white/30 p-5 rounded-full mb-2">

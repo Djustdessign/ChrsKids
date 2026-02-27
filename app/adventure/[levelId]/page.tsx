@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { ArrowLeft, Star, Compass } from 'lucide-react';
 import { useState, use } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSound } from '@/hooks/useSound';
 
 export default function AdventureGameplayPage({ params }: { params: Promise<{ levelId: string }> }) {
   const resolvedParams = use(params);
@@ -14,6 +15,7 @@ export default function AdventureGameplayPage({ params }: { params: Promise<{ le
   
   const { progress, updateProgress } = useProgress();
   const router = useRouter();
+  const { playSound } = useSound();
   
   const level = adventureLevels.find(l => l.id === levelId);
   const adventureData = level?.data;
@@ -35,10 +37,12 @@ export default function AdventureGameplayPage({ params }: { params: Promise<{ le
   const currentNode = adventureData[currentNodeId];
 
   const handleChoice = (nextNodeId: string) => {
+    playSound('click');
     setCurrentNodeId(nextNodeId);
   };
 
   const handleFinish = () => {
+    playSound('win');
     setCompleted(true);
     updateProgress({
       totalStars: progress.totalStars + 3
@@ -77,7 +81,10 @@ export default function AdventureGameplayPage({ params }: { params: Promise<{ le
           <div className="flex flex-col gap-3">
             {nextLevel && (
               <button 
-                onClick={() => router.push(`/adventure/${nextLevel.id}`)}
+                onClick={() => {
+                  playSound('click');
+                  router.push(`/adventure/${nextLevel.id}`);
+                }}
                 className="w-full bg-orange-500 text-white font-bold text-lg py-4 rounded-xl hover:bg-orange-600 transition-colors shadow-md"
               >
                 Play Next Level
@@ -86,6 +93,7 @@ export default function AdventureGameplayPage({ params }: { params: Promise<{ le
             <div className="flex gap-3">
               <button 
                 onClick={() => {
+                  playSound('click');
                   setCurrentNodeId('start');
                   setCompleted(false);
                 }}
@@ -94,7 +102,10 @@ export default function AdventureGameplayPage({ params }: { params: Promise<{ le
                 Play Again
               </button>
               <button 
-                onClick={() => router.push('/adventure')}
+                onClick={() => {
+                  playSound('click');
+                  router.push('/adventure');
+                }}
                 className="flex-1 bg-neutral-100 text-neutral-700 font-bold text-lg py-4 rounded-xl hover:bg-neutral-200 transition-colors"
               >
                 Levels
@@ -110,7 +121,7 @@ export default function AdventureGameplayPage({ params }: { params: Promise<{ le
     <main className={`min-h-screen flex flex-col ${level.color}`}>
       {/* Header */}
       <header className="p-4 flex items-center justify-between text-white drop-shadow-md">
-        <Link href="/adventure" className="bg-black/20 p-2 rounded-full hover:bg-black/30 transition">
+        <Link href="/adventure" onClick={() => playSound('click')} className="bg-black/20 p-2 rounded-full hover:bg-black/30 transition">
           <ArrowLeft className="w-6 h-6" />
         </Link>
         <div className="font-bold bg-black/20 px-4 py-1 rounded-full flex items-center gap-2">

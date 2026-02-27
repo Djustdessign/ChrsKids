@@ -7,12 +7,14 @@ import Link from 'next/link';
 import { ArrowLeft, ArrowRight, Star, CheckCircle2, Volume2, VolumeX } from 'lucide-react';
 import { useState, use, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSound } from '@/hooks/useSound';
 
 export default function StoryPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params);
   const story = stories.find(s => s.id === resolvedParams.id);
   const { progress, updateProgress } = useProgress();
   const router = useRouter();
+  const { playSound } = useSound();
   
   const [currentScene, setCurrentScene] = useState(0);
   const [completed, setCompleted] = useState(false);
@@ -38,6 +40,7 @@ export default function StoryPage({ params }: { params: Promise<{ id: string }> 
   const words = scene.text.split(' ');
 
   const toggleReading = () => {
+    playSound('click');
     if (isReading) {
       setIsReading(false);
       setHighlightedWordIndex(-1);
@@ -95,6 +98,7 @@ export default function StoryPage({ params }: { params: Promise<{ id: string }> 
   };
 
   const handleNext = () => {
+    playSound('click');
     setIsReading(false);
     setHighlightedWordIndex(-1);
     if (readingTimeoutRef.current) {
@@ -105,6 +109,7 @@ export default function StoryPage({ params }: { params: Promise<{ id: string }> 
     if (currentScene < story.scenes.length - 1) {
       setCurrentScene(prev => prev + 1);
     } else {
+      playSound('win');
       setCompleted(true);
       // Unlock next story if available
       const currentIndex = stories.findIndex(s => s.id === story.id);
@@ -124,6 +129,7 @@ export default function StoryPage({ params }: { params: Promise<{ id: string }> 
   };
 
   const handlePrev = () => {
+    playSound('click');
     setIsReading(false);
     setHighlightedWordIndex(-1);
     if (readingTimeoutRef.current) {
@@ -170,7 +176,10 @@ export default function StoryPage({ params }: { params: Promise<{ id: string }> 
           </div>
 
           <button 
-            onClick={() => router.push('/')}
+            onClick={() => {
+              playSound('click');
+              router.push('/');
+            }}
             className="w-full bg-sky-500 text-white font-bold text-lg py-4 rounded-xl hover:bg-sky-600 transition-colors shadow-md"
           >
             Back to Map
@@ -184,7 +193,7 @@ export default function StoryPage({ params }: { params: Promise<{ id: string }> 
     <main className={`min-h-screen flex flex-col ${story.color} transition-colors duration-500`}>
       {/* Header */}
       <header className="p-4 flex items-center justify-between text-white">
-        <Link href="/" className="bg-white/20 p-2 rounded-full hover:bg-white/30 transition">
+        <Link href="/" onClick={() => playSound('click')} className="bg-white/20 p-2 rounded-full hover:bg-white/30 transition">
           <ArrowLeft className="w-6 h-6" />
         </Link>
         <div className="font-bold bg-white/20 px-4 py-1 rounded-full">

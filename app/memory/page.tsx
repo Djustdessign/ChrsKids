@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ArrowLeft, Star, RotateCcw } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSound } from '@/hooks/useSound';
 
 const ALL_ICONS = ['🕊️', '🐟', '🍞', '🌈', '🐑', '🌟', '👑', '✝️', '🍇', '🍷', '🔥', '💧'];
 
@@ -27,6 +28,7 @@ type Card = {
 export default function MemoryPage() {
   const { progress, updateProgress } = useProgress();
   const router = useRouter();
+  const { playSound } = useSound();
   
   const [currentLevelIndex, setCurrentLevelIndex] = useState(0);
   const [cards, setCards] = useState<Card[]>([]);
@@ -60,6 +62,7 @@ export default function MemoryPage() {
   }, [currentLevel.pairs]);
 
   const handleRestart = () => {
+    playSound('click');
     const levelIcons = ALL_ICONS.slice(0, currentLevel.pairs);
     const shuffledIcons = [...levelIcons, ...levelIcons]
       .sort(() => Math.random() - 0.5)
@@ -78,6 +81,8 @@ export default function MemoryPage() {
   const handleCardClick = (index: number) => {
     if (flippedIndices.length === 2 || cards[index].isFlipped || cards[index].isMatched) return;
 
+    playSound('click');
+
     const newCards = [...cards];
     newCards[index].isFlipped = true;
     setCards(newCards);
@@ -91,6 +96,7 @@ export default function MemoryPage() {
       
       if (newCards[firstIndex].icon === newCards[secondIndex].icon) {
         // Match found
+        playSound('match');
         setTimeout(() => {
           const matchedCards = [...newCards];
           matchedCards[firstIndex].isMatched = true;
@@ -99,6 +105,7 @@ export default function MemoryPage() {
           setFlippedIndices([]);
           
           if (matchedCards.every(c => c.isMatched)) {
+            playSound('win');
             setCompleted(true);
             // Add stars based on moves
             let earnedStars = 3;
@@ -157,7 +164,10 @@ export default function MemoryPage() {
           <div className="flex flex-col gap-3">
             {hasNextLevel && (
               <button 
-                onClick={() => setCurrentLevelIndex(i => i + 1)}
+                onClick={() => {
+                  playSound('click');
+                  setCurrentLevelIndex(i => i + 1);
+                }}
                 className="w-full bg-green-500 text-white font-bold text-lg py-4 rounded-xl hover:bg-green-600 transition-colors shadow-md"
               >
                 Next Level
@@ -171,7 +181,10 @@ export default function MemoryPage() {
                 Play Again
               </button>
               <button 
-                onClick={() => router.push('/')}
+                onClick={() => {
+                  playSound('click');
+                  router.push('/');
+                }}
                 className="flex-1 bg-neutral-100 text-neutral-700 font-bold text-lg py-4 rounded-xl hover:bg-neutral-200 transition-colors"
               >
                 Back to Map
@@ -187,7 +200,7 @@ export default function MemoryPage() {
     <main className="min-h-screen flex flex-col bg-green-400">
       {/* Header */}
       <header className="p-4 flex items-center justify-between text-green-950">
-        <Link href="/" className="bg-white/30 p-2 rounded-full hover:bg-white/40 transition">
+        <Link href="/" onClick={() => playSound('click')} className="bg-white/30 p-2 rounded-full hover:bg-white/40 transition">
           <ArrowLeft className="w-6 h-6" />
         </Link>
         <div className="font-bold bg-white/30 px-4 py-1 rounded-full">

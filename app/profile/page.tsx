@@ -7,15 +7,18 @@ import Link from 'next/link';
 import { ArrowLeft, Star, Save } from 'lucide-react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSound } from '@/hooks/useSound';
 
 export default function ProfilePage() {
   const { progress, updateProgress } = useProgress();
   const router = useRouter();
+  const { playSound } = useSound();
   
   const [name, setName] = useState(progress.childName);
   const [avatarId, setAvatarId] = useState(progress.avatarId);
 
   const handleSave = () => {
+    playSound('click');
     updateProgress({
       childName: name,
       avatarId: avatarId
@@ -27,7 +30,7 @@ export default function ProfilePage() {
     <main className="min-h-screen flex flex-col bg-sky-400">
       {/* Header */}
       <header className="p-4 flex items-center justify-between text-white">
-        <Link href="/" className="bg-white/20 p-2 rounded-full hover:bg-white/30 transition">
+        <Link href="/" onClick={() => playSound('click')} className="bg-white/20 p-2 rounded-full hover:bg-white/30 transition">
           <ArrowLeft className="w-6 h-6" />
         </Link>
         <div className="font-bold bg-white/20 px-4 py-1 rounded-full flex items-center gap-2">
@@ -61,7 +64,10 @@ export default function ProfilePage() {
               {avatars.map(avatar => (
                 <button
                   key={avatar.id}
-                  onClick={() => setAvatarId(avatar.id)}
+                  onClick={() => {
+                    playSound('click');
+                    setAvatarId(avatar.id);
+                  }}
                   className={`p-4 rounded-2xl border-4 transition-all flex flex-col items-center gap-2 ${
                     avatarId === avatar.id 
                       ? 'border-sky-500 bg-sky-50' 
